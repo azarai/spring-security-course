@@ -10,6 +10,6 @@ import de.codeboje.courses.springsecurity.model.Task;
 
 public interface TaskRepository extends CrudRepository<Task, Long>{
 
-	@Query("from Task t where t.user.username = :username")
-	List<Task> findAllTaskByUsername(@Param("username")String username);
+	@Query("select t from Task t where t.user.username = :username")
+	List<Task> findAllTasksByUsername(@Param("username") String username);
 }
