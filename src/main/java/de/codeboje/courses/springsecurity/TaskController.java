@@ -33,7 +33,7 @@ public class TaskController {
 		
 		String username = ( (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
 		
-		return taskRepo.findAllTaskByUsername(username);
+		return taskRepo.findAllTasksByUsername(username);
 	}
 	
 	@PostMapping("tasks")
