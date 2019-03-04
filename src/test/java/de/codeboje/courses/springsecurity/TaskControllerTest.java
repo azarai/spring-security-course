@@ -14,16 +14,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.codeboje.courses.springsecurity.model.Task;
+import de.codeboje.courses.springsecurity.usermgm.UserRepository;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+
 public class TaskControllerTest {
 
 	@Autowired
@@ -34,7 +37,9 @@ public class TaskControllerTest {
 
 	@Autowired
 	private ObjectMapper objectMapper;
-
+	
+	@Autowired
+	private UserRepository userRepo;
 	
 	@Before
 	public void before() {
@@ -42,6 +47,7 @@ public class TaskControllerTest {
 	}
 	
 	@Test
+	@WithUserDetails("tester")
 	public void testCreate() throws Exception {
 
 		Task task = new Task();
@@ -67,9 +73,11 @@ public class TaskControllerTest {
 	}
 	
 	@Test
+	@WithUserDetails("tester")
 	public void testGet() throws Exception {
 
 		Task task = new Task();
+		task.setUser(userRepo.findByUsername("tester"));
 		task.setText("TaskText");
 		task = taskRepo.save(task);
 
