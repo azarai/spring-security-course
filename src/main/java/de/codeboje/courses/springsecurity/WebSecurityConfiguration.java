@@ -29,7 +29,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		.csrf().disable()
 		.authorizeRequests()
 			.antMatchers("/register").permitAll()
-			.antMatchers(HttpMethod.DELETE).hasRole("admin")
+			.antMatchers(HttpMethod.DELETE).hasRole("ADMIN")
 			.anyRequest().authenticated()
 		.and()
 		.httpBasic();
