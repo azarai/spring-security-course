@@ -50,7 +50,7 @@ public class TaskController {
 	
 	
 	
-	@PostAuthorize("hasAuthority('user') and returnObject.user.username == principal.username")
+	@PostAuthorize("hasAuthority('user') and returnObject?.user?.username == principal.username")
 	@GetMapping("/task/{id}")
 	public Task getTask(@PathVariable("id") Long id) {
 		return taskRepo.findById(id).orElse(null);
