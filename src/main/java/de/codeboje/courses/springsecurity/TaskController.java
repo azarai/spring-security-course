@@ -1,10 +1,12 @@
 package de.codeboje.courses.springsecurity;
 
 import java.security.Principal;
+import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,7 +34,8 @@ public class TaskController {
 
 	
 	@GetMapping("/tasks")
-	public Iterable<Task> getTasks() {
+	//@PostFilter("filterObject?.user?.username == principal.username")
+	public Collection<Task> getTasks() {
 		
 		String username = ( (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
 		
@@ -56,6 +59,7 @@ public class TaskController {
 		return taskRepo.findById(id).orElse(null);
 	}
 	
+	//@PreAuthorize("hasPermission(#id, 'taskId', 'write')")
 	@PreAuthorize("hasPermission(#id, 'write')")
 	@PutMapping("/task/{id}")
 	public Task putTask(@PathVariable("id") Long id, @RequestBody Task task) {
