@@ -2,6 +2,7 @@ package de.codeboje.courses.springsecurity;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -20,7 +21,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.codeboje.courses.springsecurity.auth.SecurityUser;
 import de.codeboje.courses.springsecurity.model.Task;
+import de.codeboje.courses.springsecurity.usermgm.User;
 import de.codeboje.courses.springsecurity.usermgm.UserRepository;
 
 @RunWith(SpringRunner.class)
@@ -57,8 +60,7 @@ public class TaskControllerTest {
 		mockMvc.perform(
 				post("/tasks")
 					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsBytes(task)
-				)
+					.content(objectMapper.writeValueAsBytes(task))
 		).andExpect(
 				status().is(201)
 		).andExpect(
@@ -73,7 +75,6 @@ public class TaskControllerTest {
 	}
 	
 	@Test
-	@WithUserDetails("tester")
 	public void testGet() throws Exception {
 
 		Task task = new Task();
@@ -84,6 +85,39 @@ public class TaskControllerTest {
 		// @formatter:off
 		mockMvc.perform(
 				get("/task/{0}", task.getId())
+				.with(user("tester"))
+		).andExpect(
+				status().is(200)
+		).andExpect(
+				jsonPath(
+						"text", 
+						is(task.getText())
+				)
+		);
+		// @formatter:on
+	}
+	
+	@Test
+	public void testGetWithMockDetails() throws Exception {
+
+		//user for request
+		SecurityUser testUser = new SecurityUser("tester2", "");
+		
+		//same user in DB
+		User testUserDB = new User();
+		testUserDB.setUsername("tester2");
+		testUserDB.setPassword("doesntmatter");
+		testUserDB = userRepo.save(testUserDB);
+		
+		Task task = new Task();
+		task.setUser(testUserDB);
+		task.setText("TaskText");
+		task = taskRepo.save(task);
+
+		// @formatter:off
+		mockMvc.perform(
+				get("/task/{0}", task.getId())
+				.with(user(testUser))
 		).andExpect(
 				status().is(200)
 		).andExpect(
