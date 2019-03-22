@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -85,7 +86,7 @@ public class TaskControllerTest {
 		// @formatter:off
 		mockMvc.perform(
 				get("/task/{0}", task.getId())
-				.with(user("tester"))
+				.with(user("tester").authorities(new SimpleGrantedAuthority("user")))
 		).andExpect(
 				status().is(200)
 		).andExpect(
