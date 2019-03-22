@@ -32,7 +32,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.antMatchers(HttpMethod.DELETE).hasRole("admin")
 			.anyRequest().authenticated()
 		.and()
-		.httpBasic();
+			.httpBasic()
+		.and()
+			.formLogin();
 		// @formatter:on
 	}
 
