@@ -9,11 +9,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
-import org.springframework.session.web.http.HttpSessionIdResolver;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import de.codeboje.courses.springsecurity.auth.AppUserDetailsService;
 
@@ -29,11 +27,17 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		// @formatter:off
 		http
-		.csrf().disable()
-		.authorizeRequests()
-			.antMatchers("/register").permitAll()
-			.antMatchers(HttpMethod.DELETE).hasRole("admin")
-			.anyRequest().authenticated()
+			.csrf()
+				.ignoringAntMatchers("/register")
+				.csrfTokenRepository(
+	    			CookieCsrfTokenRepository.withHttpOnlyFalse()
+	    		)
+//			.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
+		.and()
+			.authorizeRequests()
+				.antMatchers("/register").permitAll()
+				.antMatchers(HttpMethod.DELETE).hasRole("admin")
+				.anyRequest().authenticated()
 		.and()
 			.httpBasic()
 		.and()
@@ -56,8 +60,4 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		return new BCryptPasswordEncoder();
 	}
 	
-	@Bean
-	public HttpSessionIdResolver httpSessionIdResolver() {
-		return HeaderHttpSessionIdResolver.xAuthToken(); 
-	}
 }
